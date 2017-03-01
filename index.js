@@ -42,7 +42,6 @@ Actions.login = function() {
         Actions.openRM()
         return
     }
-
     User.login(function(isSuccess) {
         if (isSuccess) {
             Actions.openRM()
@@ -51,6 +50,17 @@ Actions.login = function() {
 }
 Actions.logout = function() {
     User.logout()
+}
+
+Actions.createIssue = function() {
+    Actions.openRM('create ')
+}
+Actions.create = function() {
+    // TODO:
+}
+
+Actions.listIssues = function() {
+    // TODO:
 }
 
 function main(actionName, targets) {
