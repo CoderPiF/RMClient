@@ -1,5 +1,6 @@
 const Process = require('process')
 const Alfred = require('./src/utils/alfred')
+const Logger = require('./src/utils/logger')
 
 const User = require('./src/user')
 
@@ -8,7 +9,7 @@ const RMKey = 'rm'
 var Actions = {}
 Actions.help = function() {
     var list = []
-    if (user.hasLogined()) {
+    if (User.hasLogined()) {
         list = [{
             'title': '任务列表',
             'arg': 'listIssues'
@@ -28,10 +29,34 @@ Actions.help = function() {
     console.log(Alfred.createItems(list))
 }
 
+Actions.openRM = function(options) {
+    options = options || ''
+    if (typeof(options) == 'object') {
+        options = options.join(' ')
+    }
+    Alfred.searchText(RMKey + ' ' + options)
+}
+
+Actions.login = function() {
+    if (User.hasLogined()) {
+        Actions.openRM()
+        return
+    }
+
+    User.login(function(isSuccess) {
+        if (isSuccess) {
+            Actions.openRM()
+        }
+    })
+}
+Actions.logout = function() {
+    User.logout()
+}
+
 function main(actionName, targets) {
-    var ation = Actions[actionName]
+    var action = Actions[actionName]
     if (action == undefined) {
-        // TODO:
+        Logger.warning('命令不存在：' + actionName)
     } else {
         action(targets)
     }

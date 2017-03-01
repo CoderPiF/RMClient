@@ -41,7 +41,7 @@ function configAPIKey(callback) {
 
 function login(callback) {
     configServer(function(isConfirm) {
-        if (isConfirm) {
+        if (!isConfirm) {
             callback(false)
             return
         }

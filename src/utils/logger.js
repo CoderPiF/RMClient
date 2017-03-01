@@ -1,12 +1,12 @@
-function warning(msg) {
+function warningLog(msg) {
     console.log('[W]' + msg)
 }
 
-function info(msg) {
+function infoLog(msg) {
     console.log('[I]' + msg)
 }
 
 module.exports = {
-    'info': info,
-    'warning': warning
+    'info': infoLog,
+    'warning': warningLog
 }
