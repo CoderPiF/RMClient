@@ -2,12 +2,14 @@ const Redmine = require('./utils/redmine')
 const Alfred = require('./utils/alfred')
 const Model = require('./model')
 const Util = require('util')
+const Utils = require('./utils/utils')
 const Logger = require('./utils/logger')
+const Projects = require('./projects')
 
 var M = new Model({
     'Issues': {
         'init': [],
-        'path': 'Issues.Caches'
+        'path': 'Issues'
     },
     'LockingIssues': {
         'path': 'Issues.Lock'
@@ -114,10 +116,68 @@ function listIssues() {
     })
 }
 
+function createIssue(options) {
+    if (!Projects.isLegalProject(options[0])) {
+        Projects.listProjects()
+        return
+    }
+
+    var tips = []
+    if (!Utils.hasPreString(options, '#')) {
+        tips.push({
+            'title': '设置任务时间',
+            'subtitle': '使用符号"#"表示任务时间。例如：#10 表示从今天算起，10天后是最后限期',
+            'arg': 'openRM create ' + options.join(' ') + ' #'
+        })
+    }
+
+    tips.push({
+        'title': '确认提交',
+        'subtitle': '请输入任务标题',
+        'arg': 'confirmCreate ' + options.join(' ')
+    })
+
+    console.log(Alfred.createItems(tips))
+}
+
+function confirmCreate(options, userId) {
+    var info = {
+        'projectId': options[0]
+    }
+    for (var i = 1; i < options.length; ++i) {
+        if (options[i].startsWith('#')) {
+            info['day'] = options[i].substr(1)
+        } else {
+            info['title'] = info['title'] || []
+            info['title'].push(options[i])
+        }
+    }
+    if (info['title'] == undefined) {
+        Logger.warning('请输入任务标题')
+        return
+    } else if (info['day'] == undefined) {
+        Logger.warning('请输入任务限期')
+        return
+    }
+
+    info['title'] = info['title'].join(' ')
+    info['userId'] = userId
+
+    Redmine.createIssue(info, function(isSuccess) {
+        if (isSuccess) {
+            Logger.info('添加任务成功')
+        } else {
+            Logger.info('添加任务失败')
+        }
+    })
+}
+
 module.exports = {
     'listIssues': listIssues,
     'lockIssue': lockIssue,
-    'unlockIssue': unlockIssue
+    'unlockIssue': unlockIssue,
+    'createIssue': createIssue,
+    'confirmCreate': confirmCreate
 }
 M.read('Issues')
 M.read('LockingIssues')

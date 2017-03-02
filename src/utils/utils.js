@@ -16,6 +16,14 @@ function showDialog(options, callback) {
     })
 }
 
+function hasPreString(listString, preString) {
+    for (var str of listString) {
+        if (str.startsWith(preString)) return true
+    }
+    return false
+}
+
 module.exports = {
-    'showDialog': showDialog
+    'showDialog': showDialog,
+    'hasPreString': hasPreString
 }

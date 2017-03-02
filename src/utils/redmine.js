@@ -26,6 +26,26 @@ function getHeaders() {
     }
 }
 
+function jsonRequest(urlPath, method, param, callback) {
+    var url = URL.resolve(Config.ServerUrl, urlPath)
+    Request({
+        url: url,
+        method: method,
+        headers: getHeaders(),
+        json: true,
+        body: param
+    }, callback)
+}
+
+
+function post(urlPath, param, callback) {
+    jsonRequest(urlPath, 'POST', param, callback)
+}
+
+function put(urlPath, param, callback) {
+    jsonRequest(urlPath, 'PUT', param, callback)
+}
+
 function get(urlPath, param, callback) {
     if (!hasConfig()) {
         callback('not config yet', { 'statusCode': 404 })
@@ -72,9 +92,50 @@ function openIssueHome(issueId) {
     ExecSync('open ' + url)
 }
 
+function getProject(projectId, callback) {
+    normalGet('/projects/' + projectId + '.json', {}, 'project', callback)
+}
+
+function formatDateString(date) {
+    var dd = date.getDate();
+    var mm = date.getMonth()+1; //January is 0!
+
+    var yyyy = date.getFullYear();
+    if(dd<10){
+        dd='0'+dd;
+    }
+    if(mm<10){
+        mm='0'+mm;
+    }
+    return yyyy + '-' + mm + '-' + dd
+}
+
+function todayAddDay(day) {
+    var date = new Date()
+    date.setDate(date.getDate() + parseInt(day))
+    return date
+}
+
+function createIssue(info, callback) {
+    var param = {
+        'issue': {
+            'project_id': info.projectId,
+            'subject': info.title,
+            'assigned_to_id': info.userId,
+            'start_date': formatDateString(todayAddDay(0)),
+            'due_date': formatDateString(todayAddDay(info.day))
+        }
+    }
+    post('/issues.json', param, function(err, resp, body) {
+        callback(isRespOK(err, resp))
+    })
+}
+
 module.exports = {
     'config': doConfig,
     'getCurrentUser': getCurrentUser,
     'getMyIssues': getMyIssues,
-    'openIssueHome': openIssueHome
+    'openIssueHome': openIssueHome,
+    'getProject': getProject,
+    'createIssue': createIssue
 }

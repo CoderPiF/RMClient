@@ -4,6 +4,7 @@ const Logger = require('./src/utils/logger')
 
 const User = require('./src/user')
 const Issues = require('./src/issues')
+const Projects = require('./src/projects')
 const Redmine = require('./src/utils/redmine')
 
 const RMKey = 'rm'
@@ -14,10 +15,10 @@ Actions.help = function() {
     if (User.hasLogined()) {
         list = [{
             'title': '任务列表',
-            'arg': 'listIssues'
+            'arg': 'openRM issues'
         }, {
             'title': '创建任务',
-            'arg': 'createIssue'
+            'arg': 'openRM create'
         }, {
             'title': '退出登录',
             'arg': 'logout'
@@ -54,37 +55,49 @@ Actions.logout = function() {
     User.logout()
 }
 
-Actions.createIssue = function() {
-    Actions.openRM('create ')
+Actions.create = function(options) {
+    Issues.createIssue(options)
 }
-Actions.create = function() {
-    // TODO:
+Actions.confirmCreate = function(options) {
+    Issues.confirmCreate(options, User.info.id)
 }
 
-Actions.listIssues = function() {
-    Actions.openRM('issues')
-}
 Actions.issues = function() {
     Issues.listIssues()
 }
 
-Actions.lockIssue = function(targets) {
-    Issues.lockIssue(targets[0])
+Actions.lockIssue = function(options) {
+    Issues.lockIssue(options[0])
 }
-Actions.unlockIssue = function(targets) {
-    Issues.unlockIssue(targets[0])
-}
-
-Actions.openIssueHome = function(targets) {
-    Redmine.openIssueHome(targets[0])
+Actions.unlockIssue = function(options) {
+    Issues.unlockIssue(options[0])
 }
 
-function main(actionName, targets) {
+Actions.openIssueHome = function(options) {
+    Redmine.openIssueHome(options[0])
+}
+
+Actions.importProject = function(options) {
+    Projects.importProject(options)
+}
+Actions.confirmImport = function(options) {
+    Projects.confirmImportProject(options, function(isSuccess) {
+        if (isSuccess) {
+            Actions.openRM('create')
+        }
+    })
+}
+
+Actions.selectProject = function(options) {
+    Actions.openRM('create ' + options[0] + ' ')
+}
+
+function main(actionName, options) {
     var action = Actions[actionName]
     if (action == undefined) {
         Logger.warning('命令不存在：' + actionName)
     } else {
-        action(targets)
+        action(options)
     }
 }
 
