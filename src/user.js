@@ -1,50 +1,37 @@
 const Utils = require('./utils/utils')
-const FileUtils = require('./utils/file')
+const Model = require('./model')
 const Redmine = require('./utils/redmine')
 
-const ConfigPath = FileUtils.getFilePath('User.Config')
-const UserInfoPath = FileUtils.getFilePath('User.Info')
-var Config = {}
-var UserInfo = {}
+var M = new Model({
+    'Config': {
+        'path': 'User.Config'
+    },
+    'UserInfo': {
+        'path': 'User.Info',
+        'set': function(oldValue, newValue) {
+            module.exports.info = newValue
+        }
+    }
+})
 
 function hasLogined() {
-    return !!Config['ServerUrl'] && !!Config['APIKey']
+    return M.Config['ServerUrl'] != undefined && M.Config['APIKey'] != undefined
 }
 
-function readUserInfo() {
-    UserInfo = FileUtils.readObjectFromFile(UserInfoPath)
-    module.exports.info = UserInfo
-}
-function saveUserInfo() {
-    FileUtils.writeObjectToFile(UserInfo, UserInfoPath)
-}
+function getCurrentUser() {
+    Redmine.config(M.Config['ServerUrl'], M.Config['APIKey'])
 
-function getUserInfo() {
-    Redmine.config(Config['ServerUrl'], Config['APIKey'])
-
-    readUserInfo()
+    M.read('UserInfo')
     // refresh user info
-    Redmine.getUserInfo(function(resp) {
-        if (typeof(resp) == 'object' && resp.id != undefined) {
-            UserInfo = resp
-            module.exports.info = UserInfo
-            saveUserInfo()
+    Redmine.getCurrentUser(function(data) {
+        if (typeof(data) == 'object' && data.id != undefined) {
+            M.save('UserInfo', data)
             return
         }
-        if (UserInfo.id == undefined) {
-            getUserInfo() // getUserInfo untill success
+        if (M.UserInfo.id == undefined) {
+            getCurrentUser() // getCurrentUser untill success
         }
     })
-}
-
-function readConfig() {
-    Config = FileUtils.readObjectFromFile(ConfigPath)
-    if (hasLogined()) {
-        getUserInfo()
-    }
-}
-function saveConfig() {
-    FileUtils.writeObjectToFile(Config, ConfigPath)
 }
 
 function configServer(callback) {
@@ -53,7 +40,7 @@ function configServer(callback) {
         label: '请输入Redmine地址：'
     }, function(isConfirm, text) {
         if (isConfirm) {
-            Config['ServerUrl'] = text
+            M.Config['ServerUrl'] = text
         }
         callback(isConfirm)
     })
@@ -65,8 +52,8 @@ function configAPIKey(callback) {
         label: '请输入API Key:'
     }, function(isConfirm, text) {
         if (isConfirm) {
-            Config['APIKey'] = text
-            saveConfig()
+            M.Config['APIKey'] = text
+            M.save('Config')
         }
         callback(isConfirm)
     })
@@ -80,7 +67,7 @@ function login(callback) {
         }
         configAPIKey(function(isConfirm) {
             if (isConfirm) {
-                getUserInfo()
+                getCurrentUser()
             }
             callback(isConfirm)
         })
@@ -88,14 +75,16 @@ function login(callback) {
 }
 
 function logout() {
-    Config = {}
-    FileUtils.deleteFile(ConfigPath)
+    M.clean('Config')
 }
 
 module.exports = {
     'hasLogined': hasLogined,
     'login': login,
     'logout': logout,
-    'info': UserInfo
+    'info': M.UserInfo
 }
-readConfig()
+M.read('Config')
+if (hasLogined()) {
+    getCurrentUser()
+}

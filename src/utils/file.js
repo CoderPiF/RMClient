@@ -3,12 +3,12 @@ const Path = require('path')
 
 const AppRoot = Path.dirname(require.main.filename)
 
-function readObjectFromFile(file) {
+function readObjectFromFile(file, defaultValue) {
     if (FS.existsSync(file)) {
         var obj = FS.readFileSync(file)
         return JSON.parse(obj)
     }
-    return {}
+    return defaultValue || {}
 }
 
 function writeObjectToFile(obj, file) {

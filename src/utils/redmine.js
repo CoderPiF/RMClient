@@ -11,6 +11,9 @@ function doConfig(serverUrl, apiKey) {
     Config.ServerUrl = serverUrl
     Config.APIKey = apiKey
 }
+function hasConfig() {
+    return Config.ServerUrl.length > 0 && Config.APIKey.length > 0
+}
 
 function isRespOK(err, resp) {
     return (!err && 200 <= resp.statusCode && resp.statusCode < 300)
@@ -23,6 +26,10 @@ function getHeaders() {
 }
 
 function get(urlPath, param, callback) {
+    if (!hasConfig()) {
+        callback('not config yet', { 'statusCode': 404 })
+        return
+    }
     var url = URL.resolve(Config.ServerUrl, urlPath)
     if (typeof(param) == 'object' && Object.keys(param).length > 0) {
         url += '?' + QueryString.stringify(param)
@@ -33,12 +40,15 @@ function get(urlPath, param, callback) {
     }, callback)
 }
 
-function getUserInfo(callback) {
-    get('/users/current.json', {}, function(err, resp, body) {
+function normalGet(urlPath, param, targetKey, callback) {
+    get(urlPath, param, function(err, resp, body) {
         if (isRespOK(err, resp)) {
-            var obj = JSON.parse(body)
-            if (obj.user != undefined) {
-                callback(obj.user)
+            var target = JSON.parse(body)
+            if (typeof(targetKey) == 'string' && targetKey.length > 0) {
+                target = target[targetKey]
+            }
+            if (target != undefined) {
+                callback(target)
                 return
             }
         }
@@ -46,7 +56,18 @@ function getUserInfo(callback) {
     })
 }
 
+function getCurrentUser(callback) {
+    normalGet('/users/current.json', {}, 'user', callback)
+}
+
+function getMyIssues(callback) {
+    normalGet('/issues.json', {
+        'assigned_to_id': 'me'
+    }, 'issues', callback)
+}
+
 module.exports = {
     'config': doConfig,
-    'getUserInfo': getUserInfo
+    'getCurrentUser': getCurrentUser,
+    'getMyIssues': getMyIssues
 }

@@ -42,3 +42,5 @@ jspm_packages
 # Project
 User.Config
 User.Info
+Issues.Caches
+Issues.Lock

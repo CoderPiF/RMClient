@@ -3,6 +3,7 @@ const Alfred = require('./src/utils/alfred')
 const Logger = require('./src/utils/logger')
 
 const User = require('./src/user')
+const Issues = require('./src/issues')
 
 const RMKey = 'rm'
 
@@ -60,7 +61,10 @@ Actions.create = function() {
 }
 
 Actions.listIssues = function() {
-    // TODO:
+    Actions.openRM('issues')
+}
+Actions.issues = function() {
+    Issues.listIssues()
 }
 
 function main(actionName, targets) {
