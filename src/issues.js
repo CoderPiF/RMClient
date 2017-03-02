@@ -22,9 +22,12 @@ function lockIssue(issueId) {
     M.save('LockingIssues')
     Logger.info('开始计时')
 }
-function unlockIssue(issueId) {
+function doUnlockIssue(issueId) {
     M.LockingIssues[issueId] = undefined
     M.save('LockingIssues')
+}
+function unlockIssue(issueId) {
+    doUnlockIssue(issueId)
     Logger.info('停止计时')
 }
 
@@ -53,7 +56,7 @@ function convertToAlfredItem(issue) {
     if (isLock) {
         title = formatTime(lockTime) + title
     }
-    var modifyCmd = 'modifyIssue ' + issue.id
+    var modifyCmd = 'openRM modify ' + issue.id + ' '
     return {
         'title': title,
         'subtitle': Util.format('%s [%d%%] %s', issue.status.name, issue.done_ratio, issue.due_date),
@@ -106,6 +109,7 @@ function formatIssues(issues) {
     return issues
 }
 
+// Issues
 function listIssues() {
     Redmine.getMyIssues(function(data) {
         if (typeof(data) == 'object') {
@@ -172,12 +176,102 @@ function confirmCreate(options, userId) {
     })
 }
 
+function getIssues(issueId) {
+    for (var issue of M.Issues) {
+        if (issue.id == issueId)
+            return issue
+    }
+}
+
+function modifyIssue(options) {
+    var issueId = options[0]
+
+    var tips = []
+
+    // lockTime
+    if (!Utils.hasPreString(options, '#')) {
+        var lockTime = getIssueLockTime(issueId)
+        var tmp = {
+            'title': '记录工时',
+            'subtitle': '单位是小时，请输入小数',
+            'arg': 'openRM modify ' + options.join(' ') + ' #'
+        }
+        if (lockTime != undefined) {
+            tmp['arg'] += (lockTime/(60*60)).toFixed(2) + ' '
+        }
+        tips.push(tmp)
+    }
+
+    // progress
+    if (!Utils.hasPreString(options, '%')) {
+        var issue = getIssues(issueId)
+        var progress = (issue == undefined || issue.done_ratio == 0 ? '' : issue.done_ratio)
+        tips.push({
+            'title': '修改进度',
+            'subtitle': '最大100，请输入整数',
+            'arg': 'openRM modify ' + options.join(' ') + ' %' + progress
+        })
+    }
+
+    tips.push({
+        'title': '确认修改',
+        'subtitle': '请使用"#xxx"记录时间，使用"%xx"修改进度',
+        'arg': 'confirmModify ' + options.join(' ')
+    })
+
+    tips.push({
+        'title': '关闭任务',
+        'arg': 'closeIssue ' + options.join(' ')
+    })
+
+    console.log(Alfred.createItems(tips))
+}
+
+function parseModifyOptions(options) {
+    var info = {
+        'issueId': options[0]
+    }
+    for (var i = 1; i < options.length; ++i) {
+        if (options[i].startsWith('#')) {
+            info['time'] = options[i].substr(1)
+        } else if (options[i].startsWith('%')) {
+            info['progress'] = options[i].substr(1)
+        }
+    }
+    return info
+}
+
+function doModify(info) {
+    Redmine.modifyIssue(info, function(isSuccess) {
+        if (isSuccess) {
+            doUnlockIssue(info.issueId)
+            Logger.info('修改成功')
+        } else {
+            Logger.info('修改失败')
+        }
+    })
+}
+
+function confirmModify(options) {
+    var info = parseModifyOptions(options)
+    doModify(info)
+}
+
+function closeIssue(options) {
+    var info = parseModifyOptions(options)
+    info['status'] = 'closed'
+    doModify(info)
+}
+
 module.exports = {
     'listIssues': listIssues,
     'lockIssue': lockIssue,
     'unlockIssue': unlockIssue,
     'createIssue': createIssue,
-    'confirmCreate': confirmCreate
+    'confirmCreate': confirmCreate,
+    'modifyIssue': modifyIssue,
+    'confirmModify': confirmModify,
+    'closeIssue': closeIssue
 }
 M.read('Issues')
 M.read('LockingIssues')

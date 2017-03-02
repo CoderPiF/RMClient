@@ -131,11 +131,32 @@ function createIssue(info, callback) {
     })
 }
 
+function modifyIssue(info, callback) {
+    var param = {
+        'issue': {}
+    }
+    if (info.time !== undefined) {
+        param['time_entry'] = {
+            'hours': Number(info.time)
+        }
+    }
+    if (info.status !== undefined) {
+        param.issue['status_id'] = (info.status === 'closed') ? 5 : 2
+    }
+    if (info.progress !== undefined) {
+        param.issue['done_ratio'] = Number(info.progress)
+    }
+    put('/issues/' + info.issueId + '.json', param, function(err, resp, body) {
+        callback(isRespOK(err, resp))
+    })
+}
+
 module.exports = {
     'config': doConfig,
     'getCurrentUser': getCurrentUser,
     'getMyIssues': getMyIssues,
     'openIssueHome': openIssueHome,
     'getProject': getProject,
-    'createIssue': createIssue
+    'createIssue': createIssue,
+    'modifyIssue': modifyIssue
 }

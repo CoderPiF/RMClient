@@ -66,6 +66,16 @@ Actions.issues = function() {
     Issues.listIssues()
 }
 
+Actions.modify = function(options) {
+    Issues.modifyIssue(options)
+}
+Actions.confirmModify = function(options) {
+    Issues.confirmModify(options)
+}
+Actions.closeIssue = function(options) {
+    Issues.closeIssue(options)
+}
+
 Actions.lockIssue = function(options) {
     Issues.lockIssue(options[0])
 }
@@ -86,6 +96,13 @@ Actions.confirmImport = function(options) {
             Actions.openRM('create')
         }
     })
+}
+
+Actions.lockProject = function(options) {
+    Projects.lockProject(options[0])
+}
+Actions.unlockProject = function(options) {
+    Projects.unlockProject(options[0])
 }
 
 Actions.selectProject = function(options) {
