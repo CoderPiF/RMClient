@@ -75,7 +75,7 @@ function login(callback) {
 }
 
 function logout() {
-    M.clean('Config')
+    M.CleanAllData()
 }
 
 module.exports = {

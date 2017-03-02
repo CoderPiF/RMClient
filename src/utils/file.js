@@ -19,13 +19,28 @@ function getFilePath(filename) {
     return Path.join(AppRoot, filename)
 }
 
-function deleteFile(file) {
-    FS.unlinkSync(file)
+function createDirectory(dir) {
+    if (!FS.existsSync(dir) || !FS.lstatSync(dir).isDirectory()) {
+        FS.mkdirSync(dir)
+    }
+}
+function deleteFile(dir) {
+    if (!FS.existsSync(dir)) return
+    if (!FS.lstatSync(dir).isDirectory()) {
+        FS.unlinkSync(dir)
+        return
+    }
+    FS.readdirSync(dir).forEach(function(file, index) {
+        var curPath = Path.join(dir, file)
+        deleteFile(curPath)
+    })
+    FS.rmdirSync(dir)
 }
 
 module.exports = {
     'getFilePath': getFilePath,
     'readObjectFromFile': readObjectFromFile,
     'writeObjectToFile': writeObjectToFile,
-    'deleteFile': deleteFile
+    'createDirectory': createDirectory,
+    'deleteDirectory': deleteFile
 }

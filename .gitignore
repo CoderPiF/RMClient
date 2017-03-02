@@ -40,7 +40,4 @@ jspm_packages
 .DS_Store
 
 # Project
-User.Config
-User.Info
-Issues.Caches
-Issues.Lock
+Data

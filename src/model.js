@@ -1,4 +1,23 @@
 const FileUtils = require('./utils/file')
+const Path = require('path')
+
+function copyInitValue(value) {
+    if (typeof(value) == 'object') {
+        if (Object.prototype.toString.call(value) === '[object Array]') return []
+        return {}
+    }
+    return value
+}
+
+function getDataDirectory() {
+    return FileUtils.getFilePath('Data')
+}
+
+function getSaveFilePath(fileName) {
+    var dirPath = getDataDirectory()
+    FileUtils.createDirectory(dirPath)
+    return Path.join(dirPath, fileName)
+}
 
 module.exports = function(config) {
     var Data = {}
@@ -12,14 +31,6 @@ module.exports = function(config) {
         }
     }
 
-    function copyInitValue(value) {
-        if (typeof(value) == 'object') {
-            if (Object.prototype.toString.call(value) === '[object Array]') return []
-            return {}
-        }
-        return value
-    }
-
     function add(name, config) {
         if (typeof(name) != 'string' || name.length == 0) return
 
@@ -28,7 +39,7 @@ module.exports = function(config) {
         setValue(name, copyInitValue(Data[name].init))
         Data[name].set = config.set
         Data[name].path = config.path
-        Data[name].path = FileUtils.getFilePath(Data[name].path)
+        Data[name].path = getSaveFilePath(Data[name].path)
     }
 
     this.read = function(name) {
@@ -41,11 +52,11 @@ module.exports = function(config) {
         }
         FileUtils.writeObjectToFile(Value[name], Data[name].path)
     }
-    this.clean = function(name) {
-        setValue(name, copyInitValue(Data[name].init))
-        FileUtils.deleteFile(Data[name].path)
-    }
     this.__proto__ = Value
+
+    this.CleanAllData = function() {
+        FileUtils.deleteDirectory(getDataDirectory())
+    }
 
     for (var name in config) {
         add(name, config[name])
