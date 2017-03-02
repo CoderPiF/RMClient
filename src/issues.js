@@ -63,8 +63,8 @@ function convertToAlfredItem(issue) {
                 'arg': modifyCmd
             },
             'alt': {
-                'subtitle': '编辑',
-                'arg': modifyCmd
+                'subtitle': '打开任务主页',
+                'arg': 'openIssueHome ' + issue.id
             },
             'ctrl': {
                 'subtitle': isLock ? '解除锁定' : '锁定任务',

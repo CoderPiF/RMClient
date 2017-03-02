@@ -1,6 +1,7 @@
 const Request = require('request')
 const QueryString = require('query-string')
 const URL = require('url')
+const ExecSync = require('child_process').execSync
 
 var Config = {
     'ServerUrl': '',
@@ -66,8 +67,14 @@ function getMyIssues(callback) {
     }, 'issues', callback)
 }
 
+function openIssueHome(issueId) {
+    var url = URL.resolve(Config.ServerUrl, '/issues/' + issueId)
+    ExecSync('open ' + url)
+}
+
 module.exports = {
     'config': doConfig,
     'getCurrentUser': getCurrentUser,
-    'getMyIssues': getMyIssues
+    'getMyIssues': getMyIssues,
+    'openIssueHome': openIssueHome
 }

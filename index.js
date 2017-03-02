@@ -4,6 +4,7 @@ const Logger = require('./src/utils/logger')
 
 const User = require('./src/user')
 const Issues = require('./src/issues')
+const Redmine = require('./src/utils/redmine')
 
 const RMKey = 'rm'
 
@@ -72,6 +73,10 @@ Actions.lockIssue = function(targets) {
 }
 Actions.unlockIssue = function(targets) {
     Issues.unlockIssue(targets[0])
+}
+
+Actions.openIssueHome = function(targets) {
+    Redmine.openIssueHome(targets[0])
 }
 
 function main(actionName, targets) {
