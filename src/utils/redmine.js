@@ -1,6 +1,6 @@
 const Request = require('request')
 const QueryString = require('query-string')
-const Path = require('path')
+const URL = require('url')
 
 var Config = {
     'ServerUrl': '',
@@ -23,8 +23,8 @@ function getHeaders() {
 }
 
 function get(urlPath, param, callback) {
-    var url = Path.join(Config.ServerUrl, urlPath)
-    if (typeof(param) == 'object') {
+    var url = URL.resolve(Config.ServerUrl, urlPath)
+    if (typeof(param) == 'object' && Object.keys(param).length > 0) {
         url += '?' + QueryString.stringify(param)
     }
     Request({

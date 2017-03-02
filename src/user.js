@@ -12,11 +12,11 @@ function hasLogined() {
 }
 
 function readUserInfo() {
-    UserInfo = FIleUtils.readObjectFromFile(UserInfoPath)
+    UserInfo = FileUtils.readObjectFromFile(UserInfoPath)
     module.exports.info = UserInfo
 }
 function saveUserInfo() {
-    FIleUtils.writeObjectToFile(UserInfo, UserInfoPath)
+    FileUtils.writeObjectToFile(UserInfo, UserInfoPath)
 }
 
 function getUserInfo() {
