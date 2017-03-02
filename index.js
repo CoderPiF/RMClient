@@ -67,6 +67,13 @@ Actions.issues = function() {
     Issues.listIssues()
 }
 
+Actions.lockIssue = function(targets) {
+    Issues.lockIssue(targets[0])
+}
+Actions.unlockIssue = function(targets) {
+    Issues.unlockIssue(targets[0])
+}
+
 function main(actionName, targets) {
     var action = Actions[actionName]
     if (action == undefined) {

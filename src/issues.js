@@ -2,6 +2,7 @@ const Redmine = require('./utils/redmine')
 const Alfred = require('./utils/alfred')
 const Model = require('./model')
 const Util = require('util')
+const Logger = require('./utils/logger')
 
 var M = new Model({
     'Issues': {
@@ -17,10 +18,12 @@ var M = new Model({
 function lockIssue(issueId) {
     M.LockingIssues[issueId] = Date.now()/1000
     M.save('LockingIssues')
+    Logger.info('开始计时')
 }
 function unlockIssue(issueId) {
     M.LockingIssues[issueId] = undefined
     M.save('LockingIssues')
+    Logger.info('停止计时')
 }
 
 function getIssueLockTime(issueId) {
@@ -38,7 +41,7 @@ function formatTime(time) {
     }
     time /= 60
     time = (time < 1) ? 1 : time
-    return util.format('[%s:%s] ', timeFormat(time/60), timeFormat(time%60))
+    return Util.format('[%s:%s] ', timeFormat(time/60), timeFormat(time%60))
 }
 
 function convertToAlfredItem(issue) {
