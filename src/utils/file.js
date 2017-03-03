@@ -3,14 +3,14 @@ const Path = require('path')
 
 function readTextFromFile(file, defaultValue) {
     if (FS.existsSync(file)) {
-        return FS.readFileSync(file)
+        return FS.readFileSync(file, 'utf8')
     }
     return defaultValue || ''
 }
 
 function readObjectFromFile(file, defaultValue) {
     if (FS.existsSync(file)) {
-        var obj = FS.readFileSync(file)
+        var obj = FS.readFileSync(file, 'utf8')
         return JSON.parse(obj)
     }
     return defaultValue || {}

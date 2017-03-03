@@ -30,12 +30,10 @@ Actions.help = function() {
             'arg': 'login'
         }]
     }
-    if (!Version.checkVersion()) {
-        list.push({
-            'title': '更新版本',
-            'arg': 'updateVersion'
-        })
-    }
+    list.push({
+        'title': '检查更新',
+        'arg': 'checkVersion'
+    })
     console.log(Alfred.createItems(list))
 }
 
@@ -116,8 +114,8 @@ Actions.selectProject = function(options) {
     Actions.openRM('create ' + options[0] + ' ')
 }
 
-Actions.updateVersion = function(options) {
-
+Actions.checkVersion = function() {
+    Version.checkVersion()
 }
 
 function main(actionName, options) {
