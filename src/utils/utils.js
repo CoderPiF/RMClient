@@ -16,9 +16,11 @@ function showDialog(options, callback) {
     })
 }
 
-function showAlert(title, callback) {
-    Dialog('yesno-msgbox', {
-        title: title,
+function showAlert(options, callback) {
+    Dialog('msgbox', {
+        title: options.title,
+        text: options.text,
+        label: options.label,
         button1: '确认',
         button2: '取消'
     }).then(result => {

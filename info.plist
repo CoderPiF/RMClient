@@ -18,12 +18,35 @@
 				<key>vitoclose</key>
 				<false/>
 			</dict>
+			<dict>
+				<key>destinationuid</key>
+				<string>3CF6CAF5-EBCE-4015-9FCA-B9E61F1CD4B4</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
 		</array>
 		<key>3568F9D9-F12D-4DB1-B0CB-19543C0828B1</key>
 		<array>
 			<dict>
 				<key>destinationuid</key>
 				<string>4B6398E1-0393-49A0-9925-901C6B4DD9BA</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>3CF6CAF5-EBCE-4015-9FCA-B9E61F1CD4B4</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>A03FFB51-80B8-49AF-A9E4-FE93E52740F0</string>
 				<key>modifiers</key>
 				<integer>0</integer>
 				<key>modifiersubtext</key>
@@ -525,6 +548,46 @@ fi
 			<key>version</key>
 			<integer>2</integer>
 		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>lastpathcomponent</key>
+				<false/>
+				<key>onlyshowifquerypopulated</key>
+				<false/>
+				<key>removeextension</key>
+				<false/>
+				<key>text</key>
+				<string>正在检查更新...</string>
+				<key>title</key>
+				<string>RMClient-提示</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.output.notification</string>
+			<key>uid</key>
+			<string>A03FFB51-80B8-49AF-A9E4-FE93E52740F0</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>inputstring</key>
+				<string>{query}</string>
+				<key>matchcasesensitive</key>
+				<true/>
+				<key>matchmode</key>
+				<integer>0</integer>
+				<key>matchstring</key>
+				<string>checkVersion</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.utility.filter</string>
+			<key>uid</key>
+			<string>3CF6CAF5-EBCE-4015-9FCA-B9E61F1CD4B4</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
 	</array>
 	<key>readme</key>
 	<string>Redmine小工具
@@ -548,6 +611,13 @@ fi
 			<integer>870</integer>
 			<key>ypos</key>
 			<integer>330</integer>
+		</dict>
+		<key>3CF6CAF5-EBCE-4015-9FCA-B9E61F1CD4B4</key>
+		<dict>
+			<key>xpos</key>
+			<integer>490</integer>
+			<key>ypos</key>
+			<integer>520</integer>
 		</dict>
 		<key>4B6398E1-0393-49A0-9925-901C6B4DD9BA</key>
 		<dict>
@@ -597,6 +667,13 @@ fi
 			<integer>780</integer>
 			<key>ypos</key>
 			<integer>330</integer>
+		</dict>
+		<key>A03FFB51-80B8-49AF-A9E4-FE93E52740F0</key>
+		<dict>
+			<key>xpos</key>
+			<integer>580</integer>
+			<key>ypos</key>
+			<integer>490</integer>
 		</dict>
 		<key>AFEB4834-67B2-422D-AF06-2F1942751D5D</key>
 		<dict>

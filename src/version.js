@@ -14,12 +14,6 @@ function getNewVersion(callback) {
     })
 }
 
-function updateVersion() {
-    var newVersion = trimVersion(FileUtils.readTextFromFile(NewVersionPath))
-    if (newVersion == undefined || newVersion.length == 0) return
-    Exec(ShellPath + ' ' + newVersion + ' ' + FileUtils.AppRoot)
-}
-
 function trimVersion(version) {
     var res = version.match(VersionReg)
     if (res == undefined || res.length == undefined || res.length == 0) return ''
@@ -35,9 +29,13 @@ function checkVersion() {
         if (newVersion == curVersion) {
             Logger.info('已经是最新版本了')
         } else {
-            Utils.showAlert('有新版本，是否更新？', function(confirm) {
+            Utils.showAlert({
+                'title': '版本更新',
+                'text': '更新版本了，是否更新？',
+                'label': '当前版本: ' + curVersion + '\n最新版本: ' + newVersion
+            }, function(confirm) {
                 if (confirm) {
-                    updateVersion()
+                    Exec(UpdateShellPath + ' ' + newVersion + ' ' + FileUtils.AppRoot)
                 }
             })
         }
