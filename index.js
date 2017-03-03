@@ -2,6 +2,7 @@ const Process = require('process')
 const Alfred = require('./src/utils/alfred')
 const Logger = require('./src/utils/logger')
 
+const Version = require('./src/version')
 const User = require('./src/user')
 const Issues = require('./src/issues')
 const Projects = require('./src/projects')
@@ -28,6 +29,12 @@ Actions.help = function() {
             'title': '登录',
             'arg': 'login'
         }]
+    }
+    if (!Version.checkVersion()) {
+        list.push({
+            'title': '更新版本',
+            'arg': 'updateVersion'
+        })
     }
     console.log(Alfred.createItems(list))
 }
@@ -107,6 +114,10 @@ Actions.unlockProject = function(options) {
 
 Actions.selectProject = function(options) {
     Actions.openRM('create ' + options[0] + ' ')
+}
+
+Actions.updateVersion = function(options) {
+
 }
 
 function main(actionName, options) {

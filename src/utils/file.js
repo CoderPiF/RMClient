@@ -1,7 +1,12 @@
 const FS = require('fs')
 const Path = require('path')
 
-const AppRoot = Path.dirname(require.main.filename)
+function readTextFromFile(file, defaultValue) {
+    if (FS.existsSync(file)) {
+        return FS.readFileSync(file)
+    }
+    return defaultValue || ''
+}
 
 function readObjectFromFile(file, defaultValue) {
     if (FS.existsSync(file)) {
@@ -16,7 +21,7 @@ function writeObjectToFile(obj, file) {
 }
 
 function getFilePath(filename) {
-    return Path.join(AppRoot, filename)
+    return Path.join(module.exports.AppRoot, filename)
 }
 
 function createDirectory(dir) {
@@ -38,7 +43,9 @@ function deleteFile(dir) {
 }
 
 module.exports = {
+    'AppRoot': Path.dirname(require.main.filename),
     'getFilePath': getFilePath,
+    'readTextFromFile': readTextFromFile,
     'readObjectFromFile': readObjectFromFile,
     'writeObjectToFile': writeObjectToFile,
     'createDirectory': createDirectory,
